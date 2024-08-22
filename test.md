@@ -257,6 +257,7 @@ Most sources are already modeled and in CodeQL, and have the `RemoteFlowSource` 
 
 <details>
 <summary>Hints</summary>
+
 - Import `semmle.python.dataflow.new.RemoteFlowSources` to use the RemoteFlowSource type.
 - In the `from` clause, press `Ctrl/Cmd + Space` to see all available types.
 
@@ -288,6 +289,7 @@ Before you start with the next exercise:
 
 <details>
 <summary>Hints</summary>
+
 - Use the template below and note:
 - in the `isSource` predicate, limit the `source` variable to be of the `RemoteFlowSource` type
 - in the `isSink` predicate, limit the `sink` variable to be the first argument to an `os.system` call. Note you can use your `OsSystemSink` class here.
@@ -390,45 +392,30 @@ The first argument to the `os.system` call is already modeled as a sink in CodeQ
 
 ```codeql
 import python
-import semmle.python.dataflow.new.RemoteFlowSources
+import semmle.python.Concepts
 
-from RemoteFlowSource rfs
-where rfs.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
-select rfs
-
+from SystemCommandExecution cmd
+where cmd.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select cmd, "Command Execution sink"
 ```
 
 </details>
 
 ### 8. Query the codebase with the default queries
 
-
+CodeQL queries for Python reside in the `ql/python/ql/src/Security` folder. There already exist queries for the most popular vulnerabilities: SQL injection, command injection, code injection, etc. Run the SQL injection query (CWE-089) on the test database.
 
 :lightbulb: This is very interesting for security researchers - using the default queries, we can get a general idea of what the potential vulnerabilities might exist in a given project.
 
-<details>
-<summary>Hints</summary>
-
-
-
-</details>
-<details>
-<summary>Solution</summary>
-
-```codeql
-
-
-```
-
-</details>
 
 ### 9. Run the default queries or your own queries using multi-repository variant analysis (MRVA)
 
 The power of CodeQL lies in being able to reuse the CodeQL queries and models to run them on any codebase in the same language. We can run CodeQL queries on up to a 1000 repositories at once using multi-repository variant analysis (MRVA). The projects have to be hosted on GitHub.
 
-:lightbulb: This is very interesting for security researchers - if you've found a potential dangerous sink or a source, you can
+:lightbulb: This is very interesting for security researchers - if you've found a potential dangerous sink or a source, you can add it to CodeQL (or run as a query) and do your research against a thousand repositories at once.
 
 
 
 - Follow the setup in the [docs](https://docs.github.com/en/code-security/codeql-for-vs-code/getting-started-with-codeql-for-vs-code/running-codeql-queries-at-scale-with-multi-repository-variant-analysis).
-- Note that MRVA runs using GitHub actions workflows. Actions workflows are free on public repositories, and paid on privates ones. You can set up a
+- Note that MRVA runs using GitHub actions workflows. Actions workflows are free on public repositories, and paid on privates ones.
+- After the setup, right-click and choose "CodeQL: Run Variant Analysis"
