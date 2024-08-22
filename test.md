@@ -1,5 +1,5 @@
-<h1 align="center">CodeQL tailoring</h1>
-<h3 align="center">One size does not always fit all</h3>
+<h1 align="center">Finding vulnerabilities with CodeQL</h1>
+<h3 align="center">OrangeCon 2024</h3>
 
 <p align="center">
   <a href="#mega-prerequisites">Prerequisites</a> •
@@ -42,7 +42,7 @@ Before joining the workshop, there are a few items that you will need to install
 
   1. Right-click on the file [xwiki-platform-ratings-api-12.8-db.zip](./xwiki-platform-ratings-api-12.8-db.zip) and run the command `CodeQL: Set Current Database`.
   2. Right-click on the file [SqlInjection.ql](./java/sql-injection/src/SqlInjection.ql) and run the command `CodeQL: Run Queries in Selected Files`.
-  3. See the result `Hello GreHack!` in the *CodeQL Query Results* pane.
+  3. See the result `Hello OrangeCon!` in the *CodeQL Query Results* pane.
 
    If you run into issues with your setup feel free to ask for support at the start of the workshop.
 
@@ -79,61 +79,39 @@ For each section we provide *hints* that help you finish the exercise by providi
 
 ### Overview
 
-In this workshop we will look for a known *Command injection vulnerabilities* in the [XWiki Platform](https://xwiki.org)'s ratings API component. Such vulnerabilities can occur in applications when information that is controlled by a user makes its way to application code that insecurely construct a SQL query and executes it. SQL queries insecurely constructed from user input can be rewritten to perform unintended actions such as the disclosure of sensitive information.
+In this workshop we will look for a known *Command injection vulnerabilities* in [.](https://securitylab.github.com/advisories/GHSL-2024-019_GHSL-2024-024_kohya_ss/) Such vulnerabilities can occur in applications when information that is controlled by a user makes its way to application code that insecurely construct a command and executes it. The command insecurely constructed from user input can be rewritten to perform unintended actions such as arbitrary command execution, disclosure of sensitive information.
 
-The SQL injection discussed in this workshop is reviewed in [GHSA-79rg-7mv3-jrr5](https://github.com/advisories/GHSA-79rg-7mv3-jrr5) in [GitHub Advisory Database](https://github.com/advisories).
-
-To find the SQL injection we are going to:
-
-- Identify the vulnerable method discussed in the advisory and determine how it is used.
-- Model the vulnerable method as a SQL sink so the SQL injection query is aware of this method.
-- Identify how the vulnerable method can be used by finding new XWiki specific entrypoints.
-- Model the new entrypoints as a source of untrusted data that can be used by CodeQL queries.
-
-Once we have completed the above steps, we can see whether the models, our codified security knowledge, can uncover variants or possible
-other security issues.
-
-Let's start with finding more about the SQL injection.
+The command injections discussed in this workshop are [CVE-2024-32022, CVE-2024-32026, CVE-2024-32025, CVE-2024-32027](https://securitylab.github.com/advisories/GHSL-2024-019_GHSL-2024-024_kohya_ss/).
 
 ## Theory
 
 ### Sources and sinks
 
-Think about one of the most well-known vulnerabilities—command injection. It allows an attacker to execute operating system (OS) commands on the server that is running an application, and typically fully compromise the application and its data.
+Think about one of the most well-known vulnerabilities—command injection. It happens if user input is used in functions, that allow running commands in a shell directly on the servier. It allows an attacker to execute operating system (OS) commands on the server that is running an application, and typically fully compromise the application and its data.
 
 The main cause of injection vulnerabilities is untrusted, user-controlled input being used in sensitive or dangerous functions of the program. To represent these in static analysis, we use terms such as data flow, sources, and sinks.
 
 User input generally comes from entry points to an application—the origin of data. These include parameters in HTTP methods, such as GET and POST, or command line arguments to a program. These are called “sources.”
 
-Continuing with our SQL injection, an example of a dangerous function that should not be called with unsanitized untrusted data could be MySQLCursor.execute() from the MySQLdb library in Python or Python’s eval() built-in function which evaluates arbitrary expressions. These dangerous functions are called “sinks.” Note that just because a function is potentially dangerous, it does not mean it is immediately an exploitable vulnerability and has to be removed. Many sinks have ways of using them safely.
+Continuing with our command injection, an example of a dangerous function that should not be called with unsanitized untrusted data could be `os.system`. These dangerous functions are called “sinks.” Note that just because a function is potentially dangerous, it does not mean it is immediately an exploitable vulnerability and has to be removed. Many sinks have ways of using them safely. Other exmaples of sinks, that shouldn't be used with user input are MySQLCursor.execute() from the MySQLdb library in Python (causing SQL injection) or Python’s eval() built-in function which evaluates arbitrary expressions (causing code injection).
 
 For a vulnerability to be present, the unsafe, user-controlled input has to be used without proper sanitization or input validation in a dangerous function. In other words, there has to be a code path between the source and the sink, in which case we say that data flows from a source to a sink—there is a “data flow” from the source to the sink.
+
+<img src="images/sourcs-sink-con.png">
 
 ### Basic CodeQL query
 
 ## Workshop part I - test database
 
-In the security advisory [GHSA-79rg-7mv3-jrr5](https://github.com/advisories/GHSA-79rg-7mv3-jrr5) in [GitHub Advisory Database](https://github.com/advisories) we learn of a [Jira issue](https://jira.xwiki.org/browse/XWIKI-17662) that discusses SQL injection in more detail.
+Int he first part of the workshop, we are going to practice writing and running CodeQL queries on an intentionally vulnerable codebase. In the second part of the workshop, we are going to use those queries to find a command injection in an open source software, kohya_ss.
 
-From the Jira issue we learn that:
-
-1. There exists a method `getAverageRating` in the `Rating Script Service`.
-2. The two parameters of `getAverageRating` are used in the class `AbstractRatingManager` to insecurely construct a SQL statement.
-
-We will use CodeQL to find the method and use the results to better understand how the SQL injection can manifest.
-
-Select the database [xwiki-platform-ratings-api-12.8-db.zip] as the current database by right-clicking on it in the *Explorer* and executing the command *CodeQL: Set current database*.
-
-The following steps can be implemented in the exercise file [SqlInjection.ql](./java/sql-injection/src/SqlInjection.ql)
 
 ### 1. Find all calls to functions from external libraries
 
 <details>
 <summary>Hints</summary>
 
-```codeql
-dssdf
-```
+
 
 </details>
 <details>
@@ -146,6 +124,185 @@ import semmle.python.ApiGraphs
 from API::CallNode call
 where call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
 select call
+```
+
+</details>
+
+### 2. Find all calls to `os.system`
+
+<details>
+<summary>Hints</summary>
+
+
+
+</details>
+<details>
+<summary>Solution</summary>
+
+```codeql
+
+```
+
+</details>
+
+### 3. Find the first arguments to calls to `os.system`
+
+<details>
+<summary>Hints</summary>
+
+
+
+</details>
+<details>
+<summary>Solution</summary>
+
+```codeql
+
+```
+
+</details>
+
+### 4. Tranform your query that finds the first arguments to calls to `os.system` into a CodeQL class
+
+<details>
+<summary>Hints</summary>
+
+
+
+</details>
+<details>
+<summary>Solution</summary>
+
+```codeql
+import python
+import semmle.python.ApiGraphs
+
+class OsSystemSink extends DataFlow::CallCfgNode {
+	OsSystemSink() {
+		this = API::moduleImport("os").getMember("system").getACall()
+	}
+}
+
+
+from API::CallNode call
+where call instanceof OsSystemSink
+and call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select call.getArg(0), "Call to os.system"
+```
+
+</details>
+
+### 5. Find all sources with the RemoteFlowSource class
+
+<details>
+<summary>Hints</summary>
+
+
+
+</details>
+<details>
+<summary>Solution</summary>
+
+```codeql
+import python
+import semmle.python.dataflow.new.RemoteFlowSources
+
+from RemoteFlowSource rfs
+where rfs.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select rfs
+
+```
+
+</details>
+
+## Workshop part 2 - find command injections in kohya_ss
+
+In the second part of the workshop, we are going to switch the codebase we are querying on to the `kohya_ss` one and find the data flows from sources to sinks in `kohya_ss`, which lead to command injections: [CVE-2024-32022, CVE-2024-32026, CVE-2024-32025, CVE-2024-32027](https://securitylab.github.com/advisories/GHSL-2024-019_GHSL-2024-024_kohya_ss/)
+
+Before you start with the next exercise:
+- Go to the CodeQL tab in VSCode, `Databases` section, and click on `kohya_ss-db`. A checkmark should appear. This will select the CodeQL database you are working on.
+
+### 6. Find data flows from sources to the first argumnet to `os.system` calls
+
+<details>
+<summary>Hints</summary>
+
+```codeql
+/**
+ * @name DataFlow configuration
+ * @kind path-problem
+ * @id orangecon/dataflow-query
+ */
+
+import python
+import semmle.python.dataflow.new.DataFlow
+import semmle.python.dataflow.new.TaintTracking
+import semmle.python.ApiGraphs
+import MyFlow::PathGraph
+import semmle.python.dataflow.new.RemoteFlowSources
+
+
+private module MyConfig implements DataFlow::ConfigSig {
+  predicate isSource(DataFlow::Node source) {
+    // Define your source nodes here. Eg:
+    // exists(DataFlow::CallCfgNode call |
+    //   call = API::moduleImport("sample").getMember("source").getACall() and
+    //   source = call
+    // )
+  }
+
+  predicate isSink(DataFlow::Node sink) {
+    // Define your sink nodes here. Eg:
+    // exists(DataFlow::CallCfgNode call |
+    //   call = API::moduleImport("sample").getMember("sink").getACall() and
+    //   sink = call.getArg(0)
+    // )
+  }
+}
+
+module MyFlow = TaintTracking::Global<MyConfig>; // or DataFlow::Global<..>
+
+from MyFlow::PathNode source, MyFlow::PathNode sink
+where MyFlow::flowPath(source, sink)
+select sink.getNode(), source, sink, "Sample TaintTracking query"
+```
+
+</details>
+<details>
+<summary>Solution</summary>
+
+```codeql
+/**
+ * @name DataFlow configuration
+ * @kind path-problem
+ * @id orangecon/dataflow-query
+ */
+
+import python
+import semmle.python.dataflow.new.DataFlow
+import semmle.python.dataflow.new.TaintTracking
+import semmle.python.ApiGraphs
+import semmle.python.dataflow.new.RemoteFlowSources
+import MyFlow::PathGraph
+
+private module MyConfig implements DataFlow::ConfigSig {
+predicate isSource(DataFlow::Node source) {
+	source instanceof RemoteFlowSource
+}
+
+predicate isSink(DataFlow::Node sink) {
+	exists(DataFlow::CallCfgNode call |
+	call = API::moduleImport("os").getMember("system").getACall() and
+	sink = call.getArg(0)
+	)
+}
+}
+
+module MyFlow = TaintTracking::Global<MyConfig>;
+
+from MyFlow::PathNode source, MyFlow::PathNode sink
+where MyFlow::flowPath(source, sink)
+select sink.getNode(), source, sink, "Sample TaintTracking query"
 ```
 
 </details>
