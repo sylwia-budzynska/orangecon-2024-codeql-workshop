@@ -105,12 +105,13 @@ For a vulnerability to be present, the unsafe, user-controlled input has to be u
 
 Int he first part of the workshop, we are going to practice writing and running CodeQL queries on an intentionally vulnerable codebase. In the second part of the workshop, we are going to use those queries to find a command injection in an open source software, kohya_ss.
 
+We will start by gradually builing a query to detect sinks and sources.
 
 ### 1. Find all calls to functions from external libraries
 
+
 <details>
 <summary>Hints</summary>
-
 
 
 </details>
@@ -226,7 +227,9 @@ Before you start with the next exercise:
 
 <details>
 <summary>Hints</summary>
-
+- Use the template below and note:
+- in the `isSource` predicate, limit the `source` variable to be of the `RemoteFlowSource` type
+- in the `isSink` predicate, limit the `sink` variable to be the first argument to an `os.system` call. Note you can use your `OsSystemSink` class here.
 ```codeql
 /**
  * @name DataFlow configuration
@@ -306,3 +309,65 @@ select sink.getNode(), source, sink, "Sample TaintTracking query"
 ```
 
 </details>
+
+## Bonus exercises, if time allows
+
+### 7. Explore the sinks modeled in the `Concepts` module
+
+The first argument to the `os.system` call is already modeled as a sink in CodeQL. All sinks that lead to command exection are of type `SystemCommandExecution`, and you can query any Python codebase for these sinks. There are more similar types for other vulnerabilties, which can be found in the [`Concepts`](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/Concepts.qll) module.
+
+:lightbulb: This is very interesting for security researchers - using the sinks, we can easily see what potentially dangerous functionality a project has, and review its usage.
+
+<details>
+<summary>Hints</summary>
+
+
+
+</details>
+<details>
+<summary>Solution</summary>
+
+```codeql
+import python
+import semmle.python.dataflow.new.RemoteFlowSources
+
+from RemoteFlowSource rfs
+where rfs.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select rfs
+
+```
+
+</details>
+
+### 8. Query the codebase with the default queries
+
+
+
+:lightbulb: This is very interesting for security researchers - using the default queries, we can get a general idea of what the potential vulnerabilities might exist in a given project.
+
+<details>
+<summary>Hints</summary>
+
+
+
+</details>
+<details>
+<summary>Solution</summary>
+
+```codeql
+
+
+```
+
+</details>
+
+### 9. Run the default queries or your own queries using multi-repository variant analysis (MRVA)
+
+The power of CodeQL lies in being able to reuse the CodeQL queries and models to run them on any codebase in the same language. We can run CodeQL queries on up to a 1000 repositories at once using multi-repository variant analysis (MRVA). The projects have to be hosted on GitHub.
+
+:lightbulb: This is very interesting for security researchers - if you've found a potential dangerous sink or a source, you can
+
+
+
+- Follow the setup in the [docs](https://docs.github.com/en/code-security/codeql-for-vs-code/getting-started-with-codeql-for-vs-code/running-codeql-queries-at-scale-with-multi-repository-variant-analysis).
+- Note that MRVA runs using GitHub actions workflows. Actions workflows are free on public repositories, and paid on privates ones. You can set up a
