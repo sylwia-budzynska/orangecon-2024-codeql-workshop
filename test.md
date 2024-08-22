@@ -103,16 +103,46 @@ For a vulnerability to be present, the unsafe, user-controlled input has to be u
 
 ## Workshop part I - test database
 
-Int he first part of the workshop, we are going to practice writing and running CodeQL queries on an intentionally vulnerable codebase. In the second part of the workshop, we are going to use those queries to find a command injection in an open source software, kohya_ss.
+In the workshop, we are going to find command injections, where user input ends up in an `os.system` call.
 
-We will start by gradually builing a query to detect sinks and sources.
+Here is code vulnerable to command injection:
+```
+import os
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route("/command1")
+def command_injection1():
+    files = request.args.get('files', '')
+    # Don't let files be `; rm -rf /`
+    os.system("ls " + files)
+```
+The user input comes from a GET parameter of a Flask (popular web framework in Python) request, which is started in variable `files`. `files` is then passed to `os.system` call and concatenated with `ls`, leading to command injection.
+
+In the first part of the workshop, we will write CodeQL queries to find sources and sinks, `os.ssytem` calls, on an intentionally vulnerable codebase. In the second part of the workshop, we are going to use those queries to find a command injection from a source to a sink in an open source software, kohya_ss.
+
+We will start by gradually builing a query to detect `os.system` calls and sources.
 
 ### 1. Find all calls to functions from external libraries
 
+We can find all calls to functions from external libraries (not defined in the codebase) by using CodeQL's `ApiGraphs` module.
+
+Use the tempalate below:
+```codeql
+import python
+import semmle.python.ApiGraphs
+
+from 	//TODO fill me in
+select 	//TODO fill me in
+```
 
 <details>
 <summary>Hints</summary>
 
+- In the `from` clause, start by `API::` and press `Ctrl + Space` to see the types available in the API Graphs module.
+- A call is represented by the `AST::CallNode` type. Create a variable with that type and the name `call`.
+- To limit results only to calls in the root folder of the application (called `test-app`) add a ` where` clause with the condtion `where call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")`.
 
 </details>
 <details>
@@ -124,7 +154,7 @@ import semmle.python.ApiGraphs
 
 from API::CallNode call
 where call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
-select call
+select call, , "Call to functions from external libraries"
 ```
 
 </details>
@@ -134,6 +164,9 @@ select call
 <details>
 <summary>Hints</summary>
 
+- In the `from` clause, create a `call` variable of the `API::CallNode` type.
+- To find nodes corresponding to the `os` library, use the `API::moduleImport()` method with the `os` as the argument. To access the `system` function of the `os` library, use the `getMember()` predicate on `API::moduleImport()`. At last, get any `os.system` calls with the `getACall()` predicate.
+- In the `where` clause, use the equality operator `=` to assert that `call` is equal to the `os.system` calls.
 
 
 </details>
@@ -141,7 +174,13 @@ select call
 <summary>Solution</summary>
 
 ```codeql
+import python
+import semmle.python.ApiGraphs
 
+from DataFlow::CallNode call
+where call = API::moduleImport("os").getMember("system").getACall() and
+call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select call, "Call to `os.system`"
 ```
 
 </details>
@@ -150,6 +189,7 @@ select call
 
 <details>
 <summary>Hints</summary>
+- Here we are looking for arguments to a call, and we can't use the `API::CallNode`. Instead we have to use `DataFlow::CallCfgNode` in our variable declaration
 
 
 
@@ -158,18 +198,34 @@ select call
 <summary>Solution</summary>
 
 ```codeql
+import python
+import semmle.python.ApiGraphs
+
+from DataFlow::CallCfgNode call
+where call = API::moduleImport("os").getMember("system").getACall() and
+call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select call.getArg(0), "First argument of an `os.system` call"
 
 ```
 
 </details>
 
 ### 4. Tranform your query that finds the first arguments to calls to `os.system` into a CodeQL class
+`classes` in CodeQL can be used to encapsulate reusable portions of logic. Classes represent single sets of values, and they can also include operations (known as member predicates) specific to that set of values. You have already seen numerous instances of CodeQL classes (API::CallNode, DataFlow::CallCfgNode etc.) and  member predicates (getLocation() etc.)
 
 <details>
 <summary>Hints</summary>
 
+Fill out the class template:
+```codeql
 
-
+class OsSystemSink extends DataFlow::CallCfgNode {
+	OsSystemSink() {
+		//TODO fill me in
+	}
+}
+```
+- Use the magic `this` keywor
 </details>
 <details>
 <summary>Solution</summary>
@@ -195,9 +251,14 @@ select call.getArg(0), "Call to os.system"
 
 ### 5. Find all sources with the RemoteFlowSource class
 
+Now we switch to finding sources.
+
+Most sources are already modeled and in CodeQL, and have the `RemoteFlowSource` type. We can use the type to find any sources in a codebase.
+
 <details>
 <summary>Hints</summary>
-
+- Import `semmle.python.dataflow.new.RemoteFlowSources` to use the RemoteFlowSource type.
+- In the `from` clause, press `Ctrl/Cmd + Space` to see all available types.
 
 
 </details>
