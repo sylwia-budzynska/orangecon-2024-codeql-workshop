@@ -135,8 +135,8 @@ Use the tempalate below:
 import python
 import semmle.python.ApiGraphs
 
-from 	//TODO fill me in
-select 	//TODO fill me in
+from 	//TODO: fill me in
+select 	//TODO: fill me in
 ```
 
 <details>
@@ -188,6 +188,7 @@ select call, "Call to `os.system`"
 </details>
 
 ### 3. Find the first arguments to calls to `os.system`
+We want to find the first arguments to `os.system` calls, so later we can see if any user input flows into the first arguments (so into the command that will be executed).
 
 <details>
 <summary>Hints</summary>
@@ -201,7 +202,7 @@ import semmle.python.ApiGraphs
 from DataFlow::CallCfgNode call
 where call = API::moduleImport("os").getMember("system").getACall() and
 call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
-select call // TODO: fill me in. Type a dot `.` and press `Ctrl+Space` to see available predicates.
+select call // TODO: fill me in. Type a dot `.` right after `call` and press `Ctrl/Cmd+Space` to see available predicates.
 ```
 
 
@@ -221,7 +222,7 @@ select call.getArg(0), "First argument of an `os.system` call"
 
 </details>
 
-### 4. Tranform your query that finds the first arguments to calls to `os.system` into a CodeQL class
+### 4. Tranform your query that finds the calls to `os.system` into a CodeQL class
 `classes` in CodeQL can be used to encapsulate reusable portions of logic. Classes represent single sets of values, and they can also include operations (known as member predicates) specific to that set of values. You have already seen numerous instances of CodeQL classes (API::CallNode, DataFlow::CallCfgNode etc.) and  member predicates (getLocation() etc.)
 
 <details>
@@ -231,11 +232,11 @@ Fill out the class template:
 ```codeql
 class OsSystemSink extends DataFlow::CallCfgNode {
 	OsSystemSink() {
-		//TODO fill me in
+		//TODO: fill me in
 	}
 }
 ```
-- Use the magic `this` keywor
+- Use the magic `this` keyword, that refers to the instances of the call nodes (`DataFlow::CallCfgNode`s) that we are describing in the class.
 </details>
 <details>
 <summary>Solution</summary>
@@ -300,8 +301,10 @@ Before you start with the next exercise:
 <summary>Hints</summary>
 
 - Use the template below and note:
-- in the `isSource` predicate, limit the `source` variable to be of the `RemoteFlowSource` type.
-- in the `isSink` predicate, limit the `sink` variable to be the first argument to an `os.system` call. Note you can use your `OsSystemSink` class here.
+- in the `isSource` predicate, refine the `source` variable to be of the `RemoteFlowSource` type.
+- in the `isSink` predicate, refine the `sink` variable to be the first argument to an `os.system` call. Do it using the `exists` mechanism and your `OsSystemSink` class.
+  - `exists` is a mechanism for introducing temporary variables with a restricted scope. You can think of them as their own from-where-select. In this case, use `exists` to introduce the variable `call` with type `OsSystemSink` and then refine `sink` to be the first argument to the `call`.
+
 ```codeql
 /**
  * @name DataFlow configuration
@@ -316,22 +319,18 @@ import semmle.python.ApiGraphs
 import MyFlow::PathGraph
 import semmle.python.dataflow.new.RemoteFlowSources
 
+//TODO: add previous class definition here
 
 private module MyConfig implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-    // Define your source nodes here. Eg:
-    // exists(DataFlow::CallCfgNode call |
-    //   call = API::moduleImport("sample").getMember("source").getACall() and
-    //   source = call
-    // )
+    // TODO: fill me in
   }
 
   predicate isSink(DataFlow::Node sink) {
-    // Define your sink nodes here. Eg:
-    // exists(DataFlow::CallCfgNode call |
-    //   call = API::moduleImport("sample").getMember("sink").getACall() and
-    //   sink = call.getArg(0)
-    // )
+    // TODO: fill me in. Use the `exists` mechanism
+      exists(<type> <variable> |
+      sink = ...
+  )
   }
 }
 
@@ -360,6 +359,12 @@ import semmle.python.ApiGraphs
 import semmle.python.dataflow.new.RemoteFlowSources
 import MyFlow::PathGraph
 
+class OsSystemSink extends DataFlow::CallCfgNode {
+	OsSystemSink() {
+		this = API::moduleImport("os").getMember("system").getACall()
+	}
+}
+
 private module MyConfig implements DataFlow::ConfigSig {
 predicate isSource(DataFlow::Node source) {
 	source instanceof RemoteFlowSource
@@ -382,6 +387,7 @@ select sink.getNode(), source, sink, "Sample TaintTracking query"
 
 </details>
 
+You will see a lot of data flow paths, way more than the four that were reported. To make it easier for the maintainer of kohya_ss to fix these vulnerabilities, I wrote to him a list of vulnerable endpoints and sinks (around 15-20 of them) to get a better overview of the vulnerabilities. Creating a CVE for each of the issues would have been counterproductive.
 ## Bonus exercises, if time allows
 
 ### 7. Explore the sinks modeled in the `Concepts` module
@@ -392,8 +398,16 @@ The first argument to the `os.system` call is already modeled as a sink in CodeQ
 
 <details>
 <summary>Hints</summary>
+Use the template and note:
+- after `from` clause, press `Ctrl/Cmd+Space` to see available types. Begin typing `command` and see what appears
 
+```codeql
+import python
+import semmle.python.Concepts
 
+from // TODO: fill me in
+select
+```
 
 </details>
 <details>
