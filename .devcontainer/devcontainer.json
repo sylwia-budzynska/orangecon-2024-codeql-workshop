@@ -1,11 +1,22 @@
 {
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "extensions": [
-    "github.vscode-codeql",
-    "slevesque.vscode-zipexplorer"
-  ],
+  "customizations": {
+    "codespaces": {
+      "extensions": [
+        "github.vscode-codeql",
+        "slevesque.vscode-zipexplorer"
+      ],
+      "settings": {
+        "codeQL.runningQueries.memory": 4096
+      },
+      "openFiles": [
+        "vscode-codeql-starter.code-workspace",
+        "README.md"
+      ]
+    }
+  },
   "postCreateCommand": "git submodule init && git submodule update --recursive",
-  "settings": {
-    "codeQL.runningQueries.memory": 2048
+  "hostRequirements": {
+    "memory": "16gb"
   }
  }

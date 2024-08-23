@@ -97,16 +97,18 @@ Continuing with our command injection, an example of a dangerous function that s
 
 For a vulnerability to be present, the unsafe, user-controlled input has to be used without proper sanitization or input validation in a dangerous function. In other words, there has to be a code path between the source and the sink, in which case we say that data flows from a source to a sink—there is a “data flow” from the source to the sink.
 
-<img src="images/sourcs-sink-con.png">
+<img src="images/source-sink-cmdi.png">
 
 ### Basic CodeQL query
+
+https://codeql.github.com/docs/codeql-language-guides/basic-query-for-python-code/
 
 ## Workshop part I - test database
 
 In the workshop, we are going to find command injections, where user input ends up in an `os.system` call.
 
 Here is code vulnerable to command injection:
-```
+```python
 import os
 from flask import Flask, request
 
@@ -189,8 +191,18 @@ select call, "Call to `os.system`"
 
 <details>
 <summary>Hints</summary>
-- Here we are looking for arguments to a call, and we can't use the `API::CallNode`. Instead we have to use `DataFlow::CallCfgNode` in our variable declaration
 
+- Here we are looking for arguments to a call, and we can't use the `API::CallNode`. Instead we have to use `DataFlow::CallCfgNode` in our variable declaration. This type has predicates, that will allow us to get the arguments to a call.
+- Fill out the template:
+```codeql
+import python
+import semmle.python.ApiGraphs
+
+from DataFlow::CallCfgNode call
+where call = API::moduleImport("os").getMember("system").getACall() and
+call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select call // TODO: fill me in. Type a dot `.` and press `Ctrl+Space` to see available predicates.
+```
 
 
 </details>
@@ -205,7 +217,6 @@ from DataFlow::CallCfgNode call
 where call = API::moduleImport("os").getMember("system").getACall() and
 call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
 select call.getArg(0), "First argument of an `os.system` call"
-
 ```
 
 </details>
@@ -218,7 +229,6 @@ select call.getArg(0), "First argument of an `os.system` call"
 
 Fill out the class template:
 ```codeql
-
 class OsSystemSink extends DataFlow::CallCfgNode {
 	OsSystemSink() {
 		//TODO fill me in
@@ -273,7 +283,6 @@ import semmle.python.dataflow.new.RemoteFlowSources
 from RemoteFlowSource rfs
 where rfs.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
 select rfs
-
 ```
 
 </details>
@@ -291,7 +300,7 @@ Before you start with the next exercise:
 <summary>Hints</summary>
 
 - Use the template below and note:
-- in the `isSource` predicate, limit the `source` variable to be of the `RemoteFlowSource` type
+- in the `isSource` predicate, limit the `source` variable to be of the `RemoteFlowSource` type.
 - in the `isSink` predicate, limit the `sink` variable to be the first argument to an `os.system` call. Note you can use your `OsSystemSink` class here.
 ```codeql
 /**
@@ -379,7 +388,7 @@ select sink.getNode(), source, sink, "Sample TaintTracking query"
 
 The first argument to the `os.system` call is already modeled as a sink in CodeQL. All sinks that lead to command exection are of type `SystemCommandExecution`, and you can query any Python codebase for these sinks. There are more similar types for other vulnerabilties, which can be found in the [`Concepts`](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/Concepts.qll) module.
 
-:lightbulb: This is very interesting for security researchers - using the sinks, we can easily see what potentially dangerous functionality a project has, and review its usage.
+:bulb: This is very interesting for security researchers - using the sinks, we can easily see what potentially dangerous functionality a project has, and review its usage.
 
 <details>
 <summary>Hints</summary>
@@ -405,14 +414,14 @@ select cmd, "Command Execution sink"
 
 CodeQL queries for Python reside in the `ql/python/ql/src/Security` folder. There already exist queries for the most popular vulnerabilities: SQL injection, command injection, code injection, etc. Run the SQL injection query (CWE-089) on the test database.
 
-:lightbulb: This is very interesting for security researchers - using the default queries, we can get a general idea of what the potential vulnerabilities might exist in a given project.
+:bulb: This is very interesting for security researchers - using the default queries, we can get a general idea of what the potential vulnerabilities might exist in a given project.
 
 
 ### 9. Run the default queries or your own queries using multi-repository variant analysis (MRVA)
 
 The power of CodeQL lies in being able to reuse the CodeQL queries and models to run them on any codebase in the same language. We can run CodeQL queries on up to a 1000 repositories at once using multi-repository variant analysis (MRVA). The projects have to be hosted on GitHub.
 
-:lightbulb: This is very interesting for security researchers - if you've found a potential dangerous sink or a source, you can add it to CodeQL (or run as a query) and do your research against a thousand repositories at once.
+:bulb: This is very interesting for security researchers - if you've found a potential dangerous sink or a source, you can add it to CodeQL (or run as a query) and do your research against a thousand repositories at once.
 
 
 
