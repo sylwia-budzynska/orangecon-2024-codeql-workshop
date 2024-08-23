@@ -1,1 +1,2 @@
 kohya_ss-db.zip filter=lfs diff=lfs merge=lfs -text
+test-app-db.zip filter=lfs diff=lfs merge=lfs -text
