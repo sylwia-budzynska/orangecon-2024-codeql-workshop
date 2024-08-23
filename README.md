@@ -99,8 +99,6 @@ In case you see errors such as:
 2. Go To the CodeQL View
 3. Click on "Choose Database from Archive" and select the `test-app-db.zip` file in the root of the repository.
 
-<img src="images/select-codeql-db.png"  width="380" alt="Screenshot: Select CodeQL DB from archive">
-
 Now you can test your installation:
 
 ## Test your installation
