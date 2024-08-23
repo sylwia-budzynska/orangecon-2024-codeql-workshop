@@ -21,7 +21,7 @@
    predicate isSink(DataFlow::Node sink) {
 	 // TODO: fill me in. Use the `exists` mechanism
 	   exists(<type> <variable> |
-	   sink = ...
+	   sink = //TODO: fill me in
    )
    }
  }

@@ -7,7 +7,8 @@
         "slevesque.vscode-zipexplorer"
       ],
       "settings": {
-        "codeQL.runningQueries.memory": 4096
+        "codeQL.runningQueries.memory": 4096,
+        "codeQL.runningQueries.autoSave": true
       },
       "openFiles": [
         "vscode-codeql-starter.code-workspace",

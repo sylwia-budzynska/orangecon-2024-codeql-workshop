@@ -111,7 +111,7 @@ Make sure that the previously chosen CodeQL database is selected in the CodeQL v
 
 => When the database is selected it should look like this (note the checkmark):
 
-<img src="images/codeql-db-selected.png"  width="442" alt="Screenshot: CodeQL Database selected">
+<img src="images/codeql-db-selected.png"  alt="Screenshot: CodeQL Database selected">
 
 ### Step-by-Step
 
