@@ -1,5 +1,4 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "customizations": {
     "codespaces": {
       "extensions": [
@@ -9,6 +8,19 @@
       "settings": {
         "codeQL.runningQueries.memory": 4096,
         "codeQL.runningQueries.autoSave": true
+      },
+      "openFiles": [
+        "vscode-codeql-starter.code-workspace",
+        "README.md"
+      ]
+    },
+    "vscode": {
+      "extensions": [
+        "github.vscode-codeql",
+        "slevesque.vscode-zipexplorer"
+      ],
+      "settings": {
+        "codeQL.runningQueries.memory": 4096
       },
       "openFiles": [
         "vscode-codeql-starter.code-workspace",
