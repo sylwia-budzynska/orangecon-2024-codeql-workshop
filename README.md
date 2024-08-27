@@ -374,7 +374,7 @@ Before you start with the next exercise:
 
 ```codeql
 /**
- * @name DataFlow configuration
+ * @name Command injection in os.system sink
  * @kind path-problem
  * @id orangecon/dataflow-query
  */
@@ -414,7 +414,7 @@ select sink.getNode(), source, sink, "Command injection"
 
 ```codeql
 /**
- * @name DataFlow configuration
+ * @name Command injection in os.system sink
  * @kind path-problem
  * @id orangecon/dataflow-query
  */
@@ -456,7 +456,7 @@ select sink.getNode(), source, sink, "Command injection"
 You will see a lot of data flow paths, way more than the four that were reported. To make it easier for the maintainer of kohya_ss to fix these vulnerabilities, I wrote to him a list of vulnerable endpoints and sinks (around 15-20 of them) to get a better overview of the vulnerabilities. Creating a CVE for each of the issues would have been counterproductive.
 ## Bonus exercises, if time allows
 
-### 7. Explore the sinks modeled in the `Concepts` module
+### 7. Query for `SystemCommandExecution` and explore the sinks modeled in the `Concepts` module
 
 The first argument to the `os.system` call is already modeled as a sink in CodeQL. All sinks that lead to command exection are of type `SystemCommandExecution`, and you can query any Python codebase for these sinks. There are more similar types for other vulnerabilties, which can be found in the [`Concepts`](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/Concepts.qll) module.
 
