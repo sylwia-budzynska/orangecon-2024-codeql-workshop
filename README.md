@@ -113,7 +113,7 @@ Make sure that the previously chosen CodeQL database is selected in the CodeQL v
 
 ### Step-by-Step
 
-1. In VS Code: go to the workspace folder: `codeql-custom-queries-cpp`
+1. In VS Code: go to the workspace folder: `exercises-python`
 2. Create a new file `test.ql`
 3. add the following content: `select "Hello World!"`
 4. Save file and right click in file on "CodeQL: Run Query on Selected Database"
@@ -257,13 +257,12 @@ We want to find the first arguments to `os.system` calls, so later we can see if
 <details>
 <summary>Hints</summary>
 
-- Here we are looking for arguments to a call, and we can't use the `API::CallNode`. Instead we have to use `DataFlow::CallCfgNode` in our variable declaration. This type has predicates, that will allow us to get the arguments to a call.
 - Fill out the template:
 ```codeql
 import python
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode call
+from API::CallNode call
 where call = API::moduleImport("os").getMember("system").getACall() and
 call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
 select call // TODO: fill me in. Type a dot `.` right after `call` and press `Ctrl/Cmd+Space` to see available predicates.
@@ -278,7 +277,7 @@ select call // TODO: fill me in. Type a dot `.` right after `call` and press `Ct
 import python
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode call
+from API::CallNode call
 where call = API::moduleImport("os").getMember("system").getACall() and
 call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
 select call.getArg(0), "First argument of an `os.system` call"
@@ -287,22 +286,22 @@ select call.getArg(0), "First argument of an `os.system` call"
 </details>
 
 ### 4. Tranform your query that finds the calls to `os.system` into a CodeQL class
-`classes` in CodeQL can be used to encapsulate reusable portions of logic. Classes represent single sets of values, and they can also include operations (known as member predicates) specific to that set of values. You have already seen numerous instances of CodeQL classes (API::CallNode, DataFlow::CallCfgNode etc.) and  member predicates (getLocation() etc.)
+`classes` in CodeQL can be used to encapsulate reusable portions of logic. Classes represent single sets of values, and they can also include operations (known as member predicates) specific to that set of values. You have already seen numerous instances of CodeQL classes (API::CallNode) and  member predicates (getLocation() etc.)
 
 <details>
 <summary>Hints</summary>
 
- - To create a new type, we have to extend a supertype, here `DataFlow::CallCfgNode`, give it a name, and a _characteristic predicate_ with the same name. We'll name our class, `OsSystemSink`.
+ - To create a new type, we have to extend a supertype, here `API::CallNode`, give it a name, and a _characteristic predicate_ with the same name. We'll name our class, `OsSystemSink`.
 
 Fill out the class template:
 ```codeql
-class OsSystemSink extends DataFlow::CallCfgNode {
+class OsSystemSink extends API::CallNode {
 	OsSystemSink() {
 		//TODO: fill me in
 	}
 }
 ```
-- Use the magic `this` keyword, that refers to the instances of the call nodes (`DataFlow::CallCfgNode`s) that we are describing in the class. Use `this` to find the calls to `os.system` in the same way you did previously with `API::moduleImport`.
+- Use the magic `this` keyword, that refers to the instances of the call nodes (`API::CallNode`s) that we are describing in the class. Use `this` to find the calls to `os.system` in the same way you did previously with `API::moduleImport`.
 - Change the `where` clause to make your `call` variable an `instanceof` your new `OsSystemSink` class.
 
 </details>
@@ -313,14 +312,14 @@ class OsSystemSink extends DataFlow::CallCfgNode {
 import python
 import semmle.python.ApiGraphs
 
-class OsSystemSink extends DataFlow::CallCfgNode {
+class OsSystemSink extends API::CallNode {
 	OsSystemSink() {
 		this = API::moduleImport("os").getMember("system").getACall()
 	}
 }
 
 
-from DataFlow::CallCfgNode call
+from API::CallNode call
 where call instanceof OsSystemSink
 and call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
 select call.getArg(0), "Call to os.system"
@@ -427,7 +426,7 @@ import semmle.python.ApiGraphs
 import semmle.python.dataflow.new.RemoteFlowSources
 import MyFlow::PathGraph
 
-class OsSystemSink extends DataFlow::CallCfgNode {
+class OsSystemSink extends API::CallNode {
 	OsSystemSink() {
 		this = API::moduleImport("os").getMember("system").getACall()
 	}
@@ -439,8 +438,7 @@ predicate isSource(DataFlow::Node source) {
 }
 
 predicate isSink(DataFlow::Node sink) {
-	exists(DataFlow::CallCfgNode call |
-	call = API::moduleImport("os").getMember("system").getACall() and
+	exists(OsSystemSink call |
 	sink = call.getArg(0)
 	)
 }
