@@ -221,7 +221,7 @@ import semmle.python.ApiGraphs
 
 from API::CallNode call
 where call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
-select call, "Call to functions from external libraries"
+select call, "A call"
 ```
 
 </details>
@@ -322,14 +322,14 @@ class OsSystemSink extends API::CallNode {
 from API::CallNode call
 where call instanceof OsSystemSink
 and call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
-select call.getArg(0), "Call to os.system"
+select call.getArg(0), "First argument of an `os.system` call"
 ```
 
 </details>
 
 ### 5. Find all sources with the RemoteFlowSource class
 
-Now we switch to finding sources. Use a new file
+Now we switch to finding sources.
 
 Most sources are already modeled and in CodeQL, and have the `RemoteFlowSource` type. We can use the type to find any sources in a codebase.
 
@@ -362,7 +362,7 @@ In the second part of the workshop, we are going to switch the codebase we are q
 Before you start with the next exercise:
 - Go to the CodeQL tab in VSCode, `Databases` section, and click on `kohya_ss-db`. A checkmark should appear. This will select the CodeQL database you are working on.
 
-### 6. Find data flows from sources to the first argumnet to `os.system` calls
+### 6. Find data flows from sources to the first argument to `os.system` calls
 
 <details>
 <summary>Hints</summary>
