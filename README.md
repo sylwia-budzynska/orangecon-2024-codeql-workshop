@@ -4,21 +4,13 @@
 <p align="center">
   <a href="#mega-prerequisites">Prerequisites</a> •
   <a href="#books-resources">Resources</a> •
-  <a href="#learning-objectives">Learning Objectives</a>
+  <a href="#workshop">Workshop</a>
 </p>
 
 - **Who is this for**: Security Engineers, Security Researchers, Developers.
 - **What you'll learn**: Learn how to use CodeQL for code exploration and for finding security issues.
-- **What you'll build**: Build a CodeQL query based on a security advisory to find a SQL injection.
+- **What you'll build**: Build a CodeQL query based on a security advisory to find a command injection.
 
-## Learning Objectives
-
-In this workshop will cover the following learning objectives:
-
-- Understand how to use CodeQL in exploration and identification of security vulnerabilities.
-- Be able to codify a security vulnerability as a CodeQL query.
-- Be able to refine queries to find variants and increase precision.
-- Understand how refined queries can be integrated into the developer workflow to prevent future vulnerabilities.
 
 ## :mega: Prerequisites
 
@@ -147,7 +139,7 @@ For each section we provide *hints* that help you finish the exercise by providi
 
 ### Overview
 
-In this workshop we will look for a known *Command injection vulnerabilities* in [.](https://securitylab.github.com/advisories/GHSL-2024-019_GHSL-2024-024_kohya_ss/) Such vulnerabilities can occur in applications when information that is controlled by a user makes its way to application code that insecurely construct a command and executes it. The command insecurely constructed from user input can be rewritten to perform unintended actions such as arbitrary command execution, disclosure of sensitive information.
+In this workshop we will look for a known *Command injection vulnerabilities* in [kohya_ss](https://securitylab.github.com/advisories/GHSL-2024-019_GHSL-2024-024_kohya_ss/) Such vulnerabilities can occur in applications when information that is controlled by a user makes its way to application code that insecurely construct a command and executes it. The command insecurely constructed from user input can be rewritten to perform unintended actions such as arbitrary command execution, disclosure of sensitive information.
 
 The command injections discussed in this workshop are [CVE-2024-32022, CVE-2024-32026, CVE-2024-32025, CVE-2024-32027](https://securitylab.github.com/advisories/GHSL-2024-019_GHSL-2024-024_kohya_ss/).
 
@@ -355,7 +347,7 @@ select rfs
 
 </details>
 
-## Workshop part 2 - find command injections in kohya_ss
+## Workshop part II - find command injections in kohya_ss
 
 In the second part of the workshop, we are going to switch the codebase we are querying on to the `kohya_ss` one and find the data flows from sources to sinks in `kohya_ss`, which lead to command injections: [CVE-2024-32022, CVE-2024-32026, CVE-2024-32025, CVE-2024-32027](https://securitylab.github.com/advisories/GHSL-2024-019_GHSL-2024-024_kohya_ss/)
 
