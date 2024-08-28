@@ -200,7 +200,7 @@ Use the tempalate below:
 import python
 import semmle.python.ApiGraphs
 
-from 	//TODO: fill me in. Use the `AST::CallNode` type and name your variable `call`
+from 	//TODO: fill me in. Use the `API::CallNode` type and name your variable `call`
 select 	//TODO: fill me in
 ```
 
@@ -208,7 +208,7 @@ select 	//TODO: fill me in
 <summary>Hints</summary>
 
 - In the `from` clause, start by `API::` and press `Ctrl + Space` to see the types available in the API Graphs module.
-- A call is represented by the `AST::CallNode` type. Create a variable with that type and the name `call`.
+- A call is represented by the `API::CallNode` type. Create a variable with that type and the name `call`.
 - To limit results only to calls in the root folder of the application (called `test-app`) add a ` where` clause with the condtion `where call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")`.
 
 </details>
@@ -265,7 +265,7 @@ import semmle.python.ApiGraphs
 from API::CallNode call
 where call = API::moduleImport("os").getMember("system").getACall() and
 call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
-select call // TODO: fill me in. Type a dot `.` right after `call` and press `Ctrl/Cmd+Space` to see available predicates.
+select call // TODO: fill me in. Type a dot `.` right after `call` and press `Ctrl+Space` to see available predicates.
 ```
 
 
@@ -337,7 +337,7 @@ Most sources are already modeled and in CodeQL, and have the `RemoteFlowSource` 
 <summary>Hints</summary>
 
 - Import `semmle.python.dataflow.new.RemoteFlowSources` to use the RemoteFlowSource type.
-- In the `from` clause, press `Ctrl/Cmd + Space` to see all available types.
+- In the `from` clause, press `Ctrl + Space` to see all available types.
 
 
 </details>
@@ -465,7 +465,7 @@ The first argument to the `os.system` call is already modeled as a sink in CodeQ
 <details>
 <summary>Hints</summary>
 Use the template and note:
-- after `from` clause, press `Ctrl/Cmd+Space` to see available types. Begin typing `command` and see what appears
+- after `from` clause, press `Ctrl+Space` to see available types. Begin typing `command` and see what appears
 
 ```codeql
 import python

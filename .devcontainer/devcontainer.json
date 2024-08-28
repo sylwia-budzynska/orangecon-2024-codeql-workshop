@@ -7,7 +7,8 @@
       ],
       "settings": {
         "codeQL.runningQueries.memory": 4096,
-        "codeQL.runningQueries.autoSave": true
+        "codeQL.runningQueries.autoSave": true,
+        "CodeQL.canary.enabled": true
       },
       "openFiles": [
         "vscode-codeql-starter.code-workspace",
@@ -20,7 +21,8 @@
         "slevesque.vscode-zipexplorer"
       ],
       "settings": {
-        "codeQL.runningQueries.memory": 4096
+        "codeQL.runningQueries.memory": 4096,
+        "CodeQL.canary.enabled": true
       },
       "openFiles": [
         "vscode-codeql-starter.code-workspace",
