@@ -196,6 +196,7 @@ from 	//TODO: fill me in. Use the `API::CallNode` type and name your variable `c
 select 	//TODO: fill me in
 ```
 
+
 <details>
 <summary>Hints</summary>
 
@@ -224,7 +225,7 @@ select call, "A call"
 <summary>Hints</summary>
 
 - In the `from` clause, create a `call` variable of the `API::CallNode` type.
-- In the `where` clause, use the equality operator `=` to assert that `call` is equal to the `os.system` calls.
+- In the `where` clause, use the equality operator `=` to assert that `call` is equal to the `os.system` calls. Use the logical operator `and` to specify several conditions.
 - To find nodes corresponding to the `os` library, use the `API::moduleImport()` method with the `os` as the argument. To access the `system` function of the `os` library, use the `getMember()` predicate on `API::moduleImport()`. At last, get any `os.system` calls with the `getACall()` predicate.
 
 </details>
