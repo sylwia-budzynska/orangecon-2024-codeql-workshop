@@ -18,18 +18,18 @@ You can choose between two options to run the workshop exercises:
 * [Option A: GitHub Codespace](#option-a-github-codespace) (Using a Browser or VS Code - CodeQL is run remotely on a Linux based GitHub Codespace in the cloud)
 * [Option B: Local installation](#option-b-local-installation) (Using VS Code - CodeQL is run locally on your machine)
 
-## Option A: GitHub Codespace
+### Option A: GitHub Codespace
 
 Use a remote GitHub Codespace to work on the workshop exercises.
 
-### Prerequisites
+#### Prerequisites
 
 * GitHub account ([sign up](https://github.com/) for free)
 * Browser or [Visual Studio Code](https://code.visualstudio.com/download) (VS Code) with the [GitHub Codespaces](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces) extension installed on your local machine.
 
 Note: The first 120 hours per core of Codespace usage are free per month, we use a codespace with 4 cores for this workshop since 4 cores is the current maximum for free accounts. (If you have a Pro account, we recommend switching to an 8-core machine.)
 
-### Instructions
+#### Instructions
 
 1. Login to your [GitHub](https://github.com/login) account
 2. Go to the repo https://github.com/sylwia-budzynska/orangecon-2024-codeql-workshop / (short link: https://gh.io/orangecon-2024-ws)
@@ -44,21 +44,21 @@ If you are asked to open the workspace `vscode-codeql-starter.code-workspace` cl
 5. Continue with [Selecting a CodeQL Database](#select-codeql-database)
 6. Then [Test your installation](#test-your-installation)
 
-### Use existing Codespace
+#### Use existing Codespace
 
 If you've already prepared a Codespace this workshop you can simply start it by going to the [codespace repo](https://github.com/sylwia-budzynska/orangecon-2024-codeql-workshop) and clicking on "Code -> Codespaces" and then click on the randomly generated name of this codespace (this will be faster than creating a new one):
 
 <img src="images/use-existing-codespace.png"  width="421" alt="Screenshot: Use existing Codespace">
 
-## Option B: Local installation
+### Option B: Local installation
 
 Use a local CodeQL installation to work on the workshop exercises.
 
-### Prerequisites
+#### Prerequisites
 
 * [Visual Studio Code](https://code.visualstudio.com/download) (VS Code) and `git` installed on your local machine.
 
-### Instructions
+#### Instructions
 
 1. Install [VS Code extension for CodeQL](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-codeql)
 2. Run in the terminal:
@@ -72,24 +72,24 @@ git submodule update --recursive
 4. Continue with [Selecting a CodeQL Database](#select-codeql-database)
 5. Then [Test your installation](#test-your-installation)
 
-### Troubleshooting the local installation
+#### Troubleshooting the local installation
 
 In case you see errors such as:
 * `Failed to run query: Could not resolve library path for [..]`
 * `Could not resolve module [..]`
 * `Could not resolve type [..]`
 
-=> It is very likely that you missed cloning the git submodules (namely the ql repo). To fix this follow the [Step-by-Step](#step-by-step-1) instructions starting with step 3.
+=> It is very likely that you missed cloning the git submodules (namely the ql repo). To fix this run `git submodule init && git submodule update --recursive`.
 
-## Select CodeQL Database
+### Select CodeQL Database
 
 1. Make sure you have the workspace `vscode-codeql-starter.code-workspace` open in VS Code.
 2. Go To the CodeQL View
 3. Click on "Choose Database from Archive" and select the `test-app-db.zip` file in the root of the repository.
 
-## Test your installation
+### Test your installation
 
-### Prerequisites
+#### Prerequisites
 
 Make sure that the previously chosen CodeQL database is selected in the CodeQL view. (Click on "Select" if it's not)
 
@@ -97,7 +97,7 @@ Make sure that the previously chosen CodeQL database is selected in the CodeQL v
 
 <img src="images/codeql-db-selected.png"  alt="Screenshot: CodeQL Database selected">
 
-### Instructions
+#### Instructions
 
 1. In VS Code: go to the workspace folder: `codeql-custom-queries-python`
 2. Create a new file `test.ql`
