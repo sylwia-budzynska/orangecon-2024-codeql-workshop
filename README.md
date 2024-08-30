@@ -25,7 +25,7 @@ Use a remote GitHub Codespace to work on the workshop exercises.
 #### Prerequisites
 
 * GitHub account ([sign up](https://github.com/) for free)
-* Browser or [Visual Studio Code](https://code.visualstudio.com/download) (VS Code) with the [GitHub Codespaces](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces) extension installed on your local machine.
+* Browser (you can do the whole workshop in a browser - this is the fastest setup) or [Visual Studio Code](https://code.visualstudio.com/download) (VS Code) with the [GitHub Codespaces](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces) extension installed on your local machine.
 
 Note: The first 120 hours per core of Codespace usage are free per month, we use a codespace with 4 cores for this workshop since 4 cores is the current maximum for free accounts. (If you have a Pro account, we recommend switching to an 8-core machine.)
 
@@ -38,11 +38,15 @@ Note: The first 120 hours per core of Codespace usage are free per month, we use
 
 <img src="images/create-codespace.png"  width="439" alt="Screenshot: Create Codespace, click on plus">
 
-=> VS Code will start in your browser and a remote Codespace will be built (this may take some time).
+VS Code will start in your browser and a remote Codespace will be built. This may take a few minutes.
 If you are asked to open the workspace `vscode-codeql-starter.code-workspace` click on "Open Workspace".
 
-5. Continue with [Selecting a CodeQL Database](#select-codeql-database)
-6. Then [Test your installation](#test-your-installation)
+5. If you want to use VS Code locally, press the three lines button in the top left corner and select "Open VS Code Desktop". The option might take up to a few minutes to appear.
+
+<img src="images/open-vscode-desktop.png" width="300" alt="Screenshot: Press the three lines button and Open in VS Code Desktop">
+
+6. Continue with [Selecting a CodeQL Database](#select-codeql-database)
+7. Then [Test your installation](#test-your-installation)
 
 #### Use existing Codespace
 
