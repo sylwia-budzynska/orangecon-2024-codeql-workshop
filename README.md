@@ -158,7 +158,10 @@ In this workshop we are going to find command injections, in which user input en
 
 In the first part of the workshop, we will write CodeQL queries to find sources and sinks, `os.system` calls, on an intentionally vulnerable codebase. In the second part of the workshop, we are going to use those queries to find a command injection from a source to a sink in an open source software, [kohya_ss](https://github.com/bmaltais/kohya_ss) v22.6.1.
 
-We will be able to find command injections, such as this one:
+With the CodeQL query we write, we will be able to find command injections like the one below.
+
+The user input comes from a GET parameter of a Flask (popular web framework in Python) request, which is stored in the variable `files` (see #1). `files` is then passed to the `os.system` call and concatenated with `ls`, leading to command injection (see #2).
+
 ```python
 import os
 from flask import Flask, request
@@ -168,10 +171,8 @@ app = Flask(__name__)
 @app.route("/command1")
 def command_injection1():
     files = request.args.get('files', '')   #1
-    # Don't let files be `; rm -rf /`
     os.system("ls " + files)                #2
 ```
-The user input comes from a GET parameter of a Flask (popular web framework in Python) request, which is stored in variable `files` (see #1). `files` is then passed to the `os.system` call and concatenated with `ls`, leading to command injection (see #2).
 
 We will start by gradually building a query to detect `os.system` calls and afterwards a query for sources.
 
