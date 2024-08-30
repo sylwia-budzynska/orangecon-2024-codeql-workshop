@@ -48,11 +48,7 @@ If you are asked to open the workspace `vscode-codeql-starter.code-workspace` cl
 6. Continue with [Selecting a CodeQL Database](#select-codeql-database)
 7. Then [Test your installation](#test-your-installation)
 
-#### Use existing Codespace
-
-If you've already prepared a Codespace this workshop you can simply start it by going to the [codespace repo](https://github.com/sylwia-budzynska/orangecon-2024-codeql-workshop) and clicking on "Code -> Codespaces" and then click on the randomly generated name of this codespace (this will be faster than creating a new one):
-
-<img src="images/use-existing-codespace.png"  width="421" alt="Screenshot: Use existing Codespace">
+You can see your codespaces on at [github.com/codespaces](https://github.com/codespaces).
 
 ### Option B: Local installation
 
@@ -114,6 +110,9 @@ After finishing the technical prerequisites consider the following tutorials/gui
 - [QL tutorials](https://codeql.github.com/docs/writing-codeql-queries/ql-tutorials/)
 - [Basic query for Python code](https://codeql.github.com/docs/codeql-language-guides/basic-query-for-python-code/)
 - [QL classes](https://codeql.github.com/docs/ql-language-reference/types/#classes)
+-  [CodeQL zero to hero part 1: the fundamentals of static analysis for vulnerability research](https://github.blog/2023-03-31-codeql-zero-to-hero-part-1-the-fundamentals-of-static-analysis-for-vulnerability-research/)
+- [CodeQL zero to hero part 2: getting started with CodeQL](https://github.blog/2023-06-15-codeql-zero-to-hero-part-2-getting-started-with-codeql/)
+- [CodeQL zero to hero part 3: security research](https://github.blog/2024-04-29-codeql-zero-to-hero-part-3-security-research-with-codeql/)
 
 ## :books: Resources
 
@@ -224,6 +223,18 @@ select call, "A call"
 - In the `where` clause, use the equality operator `=` to assert that `call` is equal to the `os.system` calls. Use the logical operator `and` to specify several conditions.
 - To find nodes corresponding to the `os` library, use the `API::moduleImport()` method with the `os` as the argument. To access the `system` function of the `os` library, use the `getMember()` predicate on `API::moduleImport()`. At last, get any `os.system` calls with the `getACall()` predicate.
 
+Fill out the template:
+```codeql
+import python
+import semmle.python.ApiGraphs
+
+from API::CallNode call
+where call //TODO: fill me in
+and
+call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select call, "Call to `os.system`"
+```
+
 </details>
 <details>
 <summary>Solution</summary>
@@ -282,13 +293,21 @@ select call.getArg(0), "First argument of an `os.system` call"
 
  - To create a new type, we have to extend a supertype, here `API::CallNode`, give it a name, and a _characteristic predicate_ with the same name. We'll name our class, `OsSystemSink`.
 
-Fill out the class template:
+Fill out the template:
 ```codeql
+import python
+import semmle.python.ApiGraphs
+
 class OsSystemSink extends API::CallNode {
 	OsSystemSink() {
 		//TODO: fill me in
 	}
 }
+
+from API::CallNode call
+where // TODO: fill me in
+and call.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
+select call.getArg(0), "Call to os.system"
 ```
 - Use the magic `this` keyword, that refers to the instances of the call nodes (`API::CallNode`s) that we are describing in the class. Use `this` to find the calls to `os.system` in the same way you did previously with `API::moduleImport`.
 - Change the `where` clause to make your `call` variable an `instanceof` your new `OsSystemSink` class.
@@ -327,6 +346,16 @@ Most sources are already modeled and in CodeQL, and have the `RemoteFlowSource` 
 
 - Import `semmle.python.dataflow.new.RemoteFlowSources` to use the RemoteFlowSource type.
 - In the `from` clause, press `Ctrl + Space` to see all available types.
+
+Fill out the template:
+```codeql
+import python
+import semmle.python.dataflow.new.RemoteFlowSources
+
+from //TODO: fill me in
+where //TODO: fill me in
+select //TODO: fill me in
+```
 
 
 </details>
@@ -442,7 +471,6 @@ select sink.getNode(), source, sink, "Command injection"
 
 </details>
 
-You will see a lot of data flow paths, way more than the four that were reported. To make it easier for the maintainer of kohya_ss to fix these vulnerabilities, I wrote to him a list of vulnerable endpoints and sinks to get a better overview of the vulnerabilities. Creating a CVE for each of the issues would have been counterproductive.
 ## Bonus exercises, if time allows
 
 ### 7. Query for `SystemCommandExecution` and explore the sinks modeled in the `Concepts` module
@@ -481,7 +509,7 @@ select cmd, "Command Execution sink"
 
 ### 8. Query the codebase with the default queries
 
-CodeQL queries for Python reside in the `ql/python/ql/src/Security` folder. There already exist queries for the most popular vulnerabilities: SQL injection, command injection, code injection, etc. Run the SQL injection query (CWE-089) on the test database.
+CodeQL queries for Python reside in the `ql/python/ql/src/Security` folder. There already exist queries for the most popular vulnerabilities: SQL injection, command injection, code injection, etc. Run the SQL injection query (CWE-089) on the test database (you'll need to select it in the CodeQL extension > Databases. Note the checkmark).
 
 :bulb: This is very interesting for security researchers - using the default queries, we can get a general idea of what the potential vulnerabilities might exist in a given project.
 
