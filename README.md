@@ -105,15 +105,6 @@ Make sure that the previously chosen CodeQL database is selected in the CodeQL v
 4. Save file, right click in the file area and choose "CodeQL: Run Query on Selected Database"
 5. You should see a new tab open with the result "Hello World!"
 
-After finishing the technical prerequisites consider the following tutorials/guides for basic understanding of QL and Python query writing:
-
-- [QL tutorials](https://codeql.github.com/docs/writing-codeql-queries/ql-tutorials/)
-- [Basic query for Python code](https://codeql.github.com/docs/codeql-language-guides/basic-query-for-python-code/)
-- [QL classes](https://codeql.github.com/docs/ql-language-reference/types/#classes)
--  [CodeQL zero to hero part 1: the fundamentals of static analysis for vulnerability research](https://github.blog/2023-03-31-codeql-zero-to-hero-part-1-the-fundamentals-of-static-analysis-for-vulnerability-research/)
-- [CodeQL zero to hero part 2: getting started with CodeQL](https://github.blog/2023-06-15-codeql-zero-to-hero-part-2-getting-started-with-codeql/)
-- [CodeQL zero to hero part 3: security research](https://github.blog/2024-04-29-codeql-zero-to-hero-part-3-security-research-with-codeql/)
-
 ## :books: Resources
 
 - [QL tutorials](https://codeql.github.com/docs/writing-codeql-queries/ql-tutorials/)
@@ -121,6 +112,11 @@ After finishing the technical prerequisites consider the following tutorials/gui
 - [CodeQL documentation](https://codeql.github.com/docs/)
 - [QL language reference](https://codeql.github.com/docs/ql-language-reference/)
 - [CodeQL library for Python](https://codeql.github.com/codeql-standard-libraries/python/)
+- [Basic query for Python code](https://codeql.github.com/docs/codeql-language-guides/basic-query-for-python-code/)
+- [QL classes](https://codeql.github.com/docs/ql-language-reference/types/#classes)
+-  [CodeQL zero to hero part 1: the fundamentals of static analysis for vulnerability research](https://github.blog/2023-03-31-codeql-zero-to-hero-part-1-the-fundamentals-of-static-analysis-for-vulnerability-research/)
+- [CodeQL zero to hero part 2: getting started with CodeQL](https://github.blog/2023-06-15-codeql-zero-to-hero-part-2-getting-started-with-codeql/)
+- [CodeQL zero to hero part 3: security research](https://github.blog/2024-04-29-codeql-zero-to-hero-part-3-security-research-with-codeql/)
 
 ## Workshop
 
@@ -375,10 +371,12 @@ select rfs
 
 ## Workshop part II - find command injections in kohya_ss
 
+[Kohya_ss](https://github.com/bmaltais/kohya_ss) is a GUI for [Kohya's Stable Diffusion scripts for training, generation and utilities for Stable Diffusion](https://github.com/kohya-ss/sd-scripts).
+
 In the second part of the workshop, we are going to switch the codebase we are querying on to the `kohya_ss` one and find the data flows from sources to sinks in `kohya_ss`, which lead to command injections: [CVE-2024-32022, CVE-2024-32026, CVE-2024-32025, CVE-2024-32027](https://securitylab.github.com/advisories/GHSL-2024-019_GHSL-2024-024_kohya_ss/)
 
 Before you start with the next exercise:
-- Go to the CodeQL tab in VSCode, `Databases` section, and click on `kohya_ss-db`. A checkmark should appear. This will select the CodeQL database you are working on.
+- Go to the CodeQL tab in VSCode, `Databases` section, click on "Choose Database from Archive" and select the `kohya_ss-db.zip` file in the root of the repository. A checkmark should appear. This will select the CodeQL database you are working on.
 
 ### 6. Find data flows from sources to the first argument to `os.system` calls
 
@@ -480,7 +478,7 @@ CodeQL queries for Python reside in the `ql/python/ql/src/Security` folder. Ther
 :bulb: This is very interesting for security researchers - using the default queries, we can get a general idea of what the potential vulnerabilities might exist in a given project.
 
 
-### 8. Run the default queries or your own queries using multi-repository variant analysis (MRVA)
+### 8. Run your own queries using multi-repository variant analysis (MRVA)
 
 The power of CodeQL lies in being able to reuse the CodeQL queries and models to run them on any codebase in the same language. We can run CodeQL queries on up to a 1000 repositories at once using multi-repository variant analysis (MRVA). The projects have to be hosted on GitHub.
 
