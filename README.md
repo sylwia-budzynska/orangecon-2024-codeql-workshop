@@ -79,7 +79,7 @@ In case you see errors such as:
 * `Could not resolve module [..]`
 * `Could not resolve type [..]`
 
-=> It is very likely that you missed cloning the git submodules (namely the ql repo). To fix this run `git submodule init && git submodule update --recursive`.
+It is very likely that you missed cloning the git submodules (namely the ql repo). To fix this run `git submodule init && git submodule update --recursive`.
 
 ### Select CodeQL Database
 
@@ -93,7 +93,7 @@ In case you see errors such as:
 
 Make sure that the previously chosen CodeQL database is selected in the CodeQL view. (Click on "Select" if it's not)
 
-=> When the database is selected it should look like this (note the checkmark):
+When the database is selected it should look like this (note the checkmark):
 
 <img src="images/codeql-db-selected.png"  alt="Screenshot: CodeQL Database selected">
 
