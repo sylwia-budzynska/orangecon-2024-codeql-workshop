@@ -24,13 +24,12 @@ Use a remote GitHub Codespace to work on the workshop exercises.
 
 ### Prerequisites
 
-* Stable internet connection throughout the workshop.
 * GitHub account ([sign up](https://github.com/) for free)
 * Browser or [Visual Studio Code](https://code.visualstudio.com/download) (VS Code) with the [GitHub Codespaces](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces) extension installed on your local machine.
 
-Note: The first 120h hours per core of Codespace usage are free per month, we use a codespace with 4 cores for this workshop since 4 cores is the current maximum for free accounts. (If you have a Pro account, we recommend switching to an 8-core machine.)
+Note: The first 120 hours per core of Codespace usage are free per month, we use a codespace with 4 cores for this workshop since 4 cores is the current maximum for free accounts. (If you have a Pro account, we recommend switching to an 8-core machine.)
 
-### Step-by-Step
+### Instructions
 
 1. Login to your [GitHub](https://github.com/login) account
 2. Go to the repo https://github.com/sylwia-budzynska/orangecon-2024-codeql-workshop / (short link: https://gh.io/orangecon-2024-ws)
@@ -47,7 +46,7 @@ If you are asked to open the workspace `vscode-codeql-starter.code-workspace` cl
 
 ### Use existing Codespace
 
-If you've already prepared a Codespace this workshop you can simply start it by going to the [codespace repo](https://github.com/intrigus-lgtm/nullcon-berlin-2024-workshop) and clicking on "Code -> Codespaces" and then click on the randomly generated name of this codespace (this will be faster than creating a new one):
+If you've already prepared a Codespace this workshop you can simply start it by going to the [codespace repo](https://github.com/sylwia-budzynska/orangecon-2024-codeql-workshop) and clicking on "Code -> Codespaces" and then click on the randomly generated name of this codespace (this will be faster than creating a new one):
 
 <img src="images/use-existing-codespace.png"  width="421" alt="Screenshot: Use existing Codespace">
 
@@ -57,24 +56,21 @@ Use a local CodeQL installation to work on the workshop exercises.
 
 ### Prerequisites
 
-* Requires downloading up to 2 GB of data in total.
 * [Visual Studio Code](https://code.visualstudio.com/download) (VS Code) and `git` installed on your local machine.
 
-### Step-by-Step
+### Instructions
 
 1. Install [VS Code extension for CodeQL](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-codeql)
-2. In the terminal, in a directory specified by you: `$ git clone https://github.com/sylwia-budzynska/orangecon-2024-codeql-workshop.git`
-3. `$ cd orangecon-2024-codeql-workshop`
-4. `$ git submodule init`
-5. `$ git submodule update --recursive`
-6. In VS Code: File -> **Open Workspace from File...** `vscode-codeql-starter.code-workspace`
-
-=> VS Code will start and the CodeQL CLI (binaries) will be installed. (approx. 500 MB of additional data need to be downloaded)
-
-<img src="images/codeql-cli-dl.png"  width="399" alt="Screenshot: CodeQL for VS Code downloads CodeQL binaries">
-
-7. Continue with [Selecting a CodeQL Database](#select-codeql-database)
-8. Then [Test your installation](#test-your-installation)
+2. Run in the terminal:
+```bash
+git clone https://github.com/sylwia-budzynska/orangecon-2024-codeql-workshop.git
+cd orangecon-2024-codeql-workshop
+git submodule init
+git submodule update --recursive
+```
+3. In VS Code: File -> **Open Workspace from File...** `vscode-codeql-starter.code-workspace`
+4. Continue with [Selecting a CodeQL Database](#select-codeql-database)
+5. Then [Test your installation](#test-your-installation)
 
 ### Troubleshooting the local installation
 
@@ -91,8 +87,6 @@ In case you see errors such as:
 2. Go To the CodeQL View
 3. Click on "Choose Database from Archive" and select the `test-app-db.zip` file in the root of the repository.
 
-Now you can test your installation:
-
 ## Test your installation
 
 ### Prerequisites
@@ -103,9 +97,9 @@ Make sure that the previously chosen CodeQL database is selected in the CodeQL v
 
 <img src="images/codeql-db-selected.png"  alt="Screenshot: CodeQL Database selected">
 
-### Step-by-Step
+### Instructions
 
-1. In VS Code: go to the workspace folder: `exercises-python`
+1. In VS Code: go to the workspace folder: `codeql-custom-queries-python`
 2. Create a new file `test.ql`
 3. add the following content: `select "Hello World!"`
 4. Save file and right click in file on "CodeQL: Run Query on Selected Database"
@@ -113,6 +107,7 @@ Make sure that the previously chosen CodeQL database is selected in the CodeQL v
 =>  The output should look like this:
 
 <img src="images/test-hello-world.png"  width="620" alt="Screenshot: First CodeQL query results">
+
 After finishing the technical prerequisites consider the following tutorials/guides for basic understanding of QL and Python query writing:
 
 - [QL tutorials](https://codeql.github.com/docs/writing-codeql-queries/ql-tutorials/)
@@ -129,7 +124,7 @@ After finishing the technical prerequisites consider the following tutorials/gui
 
 ## Workshop
 
-Welcome to the workshop findiing vunlnerabilities with CodeQL!
+Welcome to the workshop "Finding vunlnerabilities with CodeQL"!
 This session will introduce fundamentals of security research and static analysis used when looking for vulnerabilities in software. We will use an example of a simple vulnerability, walk through how CodeQL could detect it, and provide examples on how the audience could use CodeQL to find vulnerabilities themselves.
 
 Before we get started it is important that all of the prerequisites are met so you can participate in the workshop.
@@ -446,7 +441,7 @@ select sink.getNode(), source, sink, "Command injection"
 
 </details>
 
-You will see a lot of data flow paths, way more than the four that were reported. To make it easier for the maintainer of kohya_ss to fix these vulnerabilities, I wrote to him a list of vulnerable endpoints and sinks (around 15-20 of them) to get a better overview of the vulnerabilities. Creating a CVE for each of the issues would have been counterproductive.
+You will see a lot of data flow paths, way more than the four that were reported. To make it easier for the maintainer of kohya_ss to fix these vulnerabilities, I wrote to him a list of vulnerable endpoints and sinks to get a better overview of the vulnerabilities. Creating a CVE for each of the issues would have been counterproductive.
 ## Bonus exercises, if time allows
 
 ### 7. Query for `SystemCommandExecution` and explore the sinks modeled in the `Concepts` module
@@ -503,6 +498,8 @@ The power of CodeQL lies in being able to reuse the CodeQL queries and models to
 - After the setup, right-click and choose "CodeQL: Run Variant Analysis"
 
 ## Closing remarks
+Today, you have learned how to explore a codebase using CodeQL and how to CodeQL in your own security research workflow.
+
 Check out these resources if you'd like to know more about:
 - static analysis and how it works:
   -  [CodeQL zero to hero part 1: the fundamentals of static analysis for vulnerability research](https://github.blog/2023-03-31-codeql-zero-to-hero-part-1-the-fundamentals-of-static-analysis-for-vulnerability-research/). Link to the [challenges accompanying the blog post](https://github.com/sylwia-budzynska/codeql-zero-to-hero/tree/main/1)
@@ -510,3 +507,5 @@ Check out these resources if you'd like to know more about:
   - [CodeQL zero to hero part 2: getting started with CodeQL](https://github.blog/2023-06-15-codeql-zero-to-hero-part-2-getting-started-with-codeql/). Link to the [challenges accompanying the blog post](https://github.com/GitHubSecurityLab/codeql-zero-to-hero/tree/main/2)
 - security research with CodeQL:
   - [CodeQL zero to hero part 3: security research](https://github.blog/2024-04-29-codeql-zero-to-hero-part-3-security-research-with-codeql/). Link to the [challenges accompanying the blog post](https://github.com/GitHubSecurityLab/codeql-zero-to-hero/tree/main/3)
+
+If you end up finding a vulnerability using CodeQL, feel free to add it to the [CodeQL Wall of Fame](https://gh.io/codeql-wall-of-fame/).
