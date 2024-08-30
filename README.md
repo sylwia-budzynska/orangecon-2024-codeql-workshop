@@ -158,7 +158,7 @@ For a vulnerability to be present, the unsafe, user-controlled input has to be u
 
 ## Workshop part I - test database
 
-In this workshop we are going to find command injections, where user input ends up in an `os.system` call.
+In this workshop we are going to find command injections, where user input ends up in an `os.system` call. We are going to use a CodeQL databse with a number of intentionally vulnerable code snippets for this part of the workshop.
 
 Here is code vulnerable to command injection:
 ```python
@@ -191,7 +191,7 @@ import semmle.python.ApiGraphs
 from 	//TODO: fill me in. Use the `API::CallNode` type and name your variable `call`
 select 	//TODO: fill me in
 ```
-
+Right click in the file area and choose "CodeQL: Run Query on Selected Database" to run the query.
 
 <details>
 <summary>Hints</summary>
