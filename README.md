@@ -473,48 +473,14 @@ select sink.getNode(), source, sink, "Command injection"
 
 ## Bonus exercises, if time allows
 
-### 7. Query for `SystemCommandExecution` and explore the sinks modeled in the `Concepts` module
-
-The first argument to the `os.system` call is already modeled as a sink in CodeQL. All sinks that lead to command exection are of type `SystemCommandExecution`, and you can query any Python codebase for these sinks. There are more similar types for other vulnerabilties, which can be found in the [`Concepts`](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/Concepts.qll) module.
-
-:bulb: This is very interesting for security researchers - using the sinks, we can easily see what potentially dangerous functionality a project has, and review its usage.
-
-<details>
-<summary>Hints</summary>
-Use the template and note:
-- after `from` clause, press `Ctrl+Space` to see available types. Begin typing `command` and see what appears
-
-```codeql
-import python
-import semmle.python.Concepts
-
-from // TODO: fill me in
-select
-```
-
-</details>
-<details>
-<summary>Solution</summary>
-
-```codeql
-import python
-import semmle.python.Concepts
-
-from SystemCommandExecution cmd
-where cmd.getLocation().getFile().getRelativePath().regexpMatch("test-app/.*")
-select cmd, "Command Execution sink"
-```
-
-</details>
-
-### 8. Query the codebase with the default queries
+### 7. Query the codebase with the default queries
 
 CodeQL queries for Python reside in the `ql/python/ql/src/Security` folder. There already exist queries for the most popular vulnerabilities: SQL injection, command injection, code injection, etc. Run the SQL injection query (CWE-089) on the test database (you'll need to select it in the CodeQL extension > Databases. Note the checkmark).
 
 :bulb: This is very interesting for security researchers - using the default queries, we can get a general idea of what the potential vulnerabilities might exist in a given project.
 
 
-### 9. Run the default queries or your own queries using multi-repository variant analysis (MRVA)
+### 8. Run the default queries or your own queries using multi-repository variant analysis (MRVA)
 
 The power of CodeQL lies in being able to reuse the CodeQL queries and models to run them on any codebase in the same language. We can run CodeQL queries on up to a 1000 repositories at once using multi-repository variant analysis (MRVA). The projects have to be hosted on GitHub.
 
