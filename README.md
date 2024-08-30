@@ -154,9 +154,11 @@ For a vulnerability to be present, the unsafe, user-controlled input has to be u
 
 ## Workshop part I - test database
 
-In this workshop we are going to find command injections, where user input ends up in an `os.system` call. We are going to use a CodeQL databse with a number of intentionally vulnerable code snippets for this part of the workshop.
+In this workshop we are going to find command injections, in which user input ends up in an `os.system` call.
 
-Here is code vulnerable to command injection:
+In the first part of the workshop, we will write CodeQL queries to find sources and sinks, `os.system` calls, on an intentionally vulnerable codebase. In the second part of the workshop, we are going to use those queries to find a command injection from a source to a sink in an open source software, [kohya_ss](https://github.com/bmaltais/kohya_ss) v22.6.1.
+
+We will be able to find command injections, such as this one:
 ```python
 import os
 from flask import Flask, request
@@ -165,15 +167,13 @@ app = Flask(__name__)
 
 @app.route("/command1")
 def command_injection1():
-    files = request.args.get('files', '')
+    files = request.args.get('files', '')   #1
     # Don't let files be `; rm -rf /`
-    os.system("ls " + files)
+    os.system("ls " + files)                #2
 ```
-The user input comes from a GET parameter of a Flask (popular web framework in Python) request, which is stored in variable `files`. `files` is then passed to the `os.system` call and concatenated with `ls`, leading to command injection.
+The user input comes from a GET parameter of a Flask (popular web framework in Python) request, which is stored in variable `files` (see #1). `files` is then passed to the `os.system` call and concatenated with `ls`, leading to command injection (see #2).
 
-In the first part of the workshop, we will write CodeQL queries to find sources and sinks, `os.ssytem` calls, on an intentionally vulnerable codebase. In the second part of the workshop, we are going to use those queries to find a command injection from a source to a sink in an open source software, [kohya_ss](https://github.com/bmaltais/kohya_ss) v22.6.1.
-
-We will start by gradually builing a query to detect `os.system` calls and alter query for sources.
+We will start by gradually building a query to detect `os.system` calls and afterwards a query for sources.
 
 ### 1. Find all calls to functions from external libraries
 
