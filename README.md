@@ -102,11 +102,8 @@ Make sure that the previously chosen CodeQL database is selected in the CodeQL v
 1. In VS Code: go to the workspace folder: `codeql-custom-queries-python`
 2. Create a new file `test.ql`
 3. add the following content: `select "Hello World!"`
-4. Save file and right click in file on "CodeQL: Run Query on Selected Database"
-
-=>  The output should look like this:
-
-<img src="images/test-hello-world.png"  width="620" alt="Screenshot: First CodeQL query results">
+4. Save file, right click in the file area and choose "CodeQL: Run Query on Selected Database"
+5. You should see a new tab open with the result "Hello World!"
 
 After finishing the technical prerequisites consider the following tutorials/guides for basic understanding of QL and Python query writing:
 
