@@ -3,7 +3,8 @@
     "codespaces": {
       "extensions": [
         "github.vscode-codeql",
-        "slevesque.vscode-zipexplorer"
+        "slevesque.vscode-zipexplorer",
+        "burkeholland.simple-timer"
       ],
       "settings": {
         "codeQL.runningQueries.memory": 4096,
@@ -18,7 +19,8 @@
     "vscode": {
       "extensions": [
         "github.vscode-codeql",
-        "slevesque.vscode-zipexplorer"
+        "slevesque.vscode-zipexplorer",
+        "burkeholland.simple-timer"
       ],
       "settings": {
         "codeQL.runningQueries.memory": 4096,

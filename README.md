@@ -185,7 +185,7 @@ Use the tempalate below:
 import python
 import semmle.python.ApiGraphs
 
-from 	//TODO: fill me in. Use the `API::CallNode` type and name your variable `call`
+from 	//TODO: fill me in. Start typing `API::` and press `Ctrl+Space` to see a list of available types. Name your variable `call`
 select 	//TODO: fill me in
 ```
 Right click in the file area and choose "CodeQL: Run Query on Selected Database" to run the query.
